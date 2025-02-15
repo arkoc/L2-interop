@@ -18,8 +18,8 @@ Networks should be able to join the protocol without approvals or gatekeepers.
 1. Alice opens the [Bridge dApp](https://docs.train.tech/protocol/dApp), connects her wallet, and selects the route from Starknet to Optimism.  
 2. The dApp queries the [Solver Discovery contract](https://docs.train.tech/protocol/discovery) and retrieves addresses of all Solvers that support that route.
 3. Alice creates a **commit transaction with 1 ETH in Starknet** and passes the Solver addresses.
-
 At this stage, the locked funds can either be updated with a \`Hashlock\` after the auction winner is decided or refunded once the \`Timelock\` expires.
+
 4. A [Dutch Auction](https://docs.train.tech/protocol/auction) starts — Bob and John (Solvers) compete on price until one of them wins.  
 5. Bob wins the auction generates secret `S`, calculates `Haslock = HASH(S)` and **locks 1 ETH on Optimism**.
 Now, the funds are secured for Alice and can be released once Bob reveals the secret.
