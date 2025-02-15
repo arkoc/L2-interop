@@ -15,19 +15,21 @@ Networks should be able to join the protocol without approvals or gatekeepers.
 
 ## Intens with PreHTLC and Local Verification
 
-1. Alice opens the [Bridge dApp](https://docs.train.tech/protocol/dApp), connects her wallet, and selects the route from Starknet to Optimism.  
-2. The dApp queries the [Solver Discovery contract](https://docs.train.tech/protocol/discovery) and retrieves addresses of all Solvers that support that route.
-3. Alice creates a **commit transaction with 1 ETH in Starknet** and passes the Solver addresses.
-At this stage, the locked funds can either be updated with a \`Hashlock\` after the auction winner is decided or refunded once the \`Timelock\` expires.
+- Alice opens the [Bridge dApp](https://docs.train.tech/protocol/dApp), connects her wallet, and selects the route from Starknet to Optimism.  
+- The dApp queries the [Solver Discovery contract](https://docs.train.tech/protocol/discovery) and retrieves addresses of all Solvers that support that route.
+- Alice creates a **commit transaction with 1 ETH in Starknet** and passes the Solver addresses.
 
-4. A [Dutch Auction](https://docs.train.tech/protocol/auction) starts — Bob and John (Solvers) compete on price until one of them wins.  
-5. Bob wins the auction generates secret `S`, calculates `Haslock = HASH(S)` and **locks 1 ETH on Optimism**.
+>At this stage, the locked funds can either be updated with a \`Hashlock\` after the auction winner is decided or refunded once the \`Timelock\` expires.
+
+- A [Dutch Auction](https://docs.train.tech/protocol/auction) starts — Bob and John (Solvers) compete on price until one of them wins.  
+- Bob wins the auction generates secret `S`, calculates `Haslock = HASH(S)` and **locks 1 ETH on Optimism**.
 Now, the funds are secured for Alice and can be released once Bob reveals the secret.
-6. The dApp begins **local verification** of the Optimism network by tracking Bob’s transaction. If a [Light Client](https://docs.train.tech/protocol/dApp#observing-the-destination-network) is available, it is used; otherwise, the dApp retrieves data from multiple RPC endpoints or uses the node provider specified by the user. Once detected, it captures the \`Hashlock\`.
-7. Once the \`Hashlock\` is verified, Alice signs a message that adds the \`Hashlock\` and sets the \`receiver\` of her previously committed funds to Bob.
+- The dApp begins **local verification** of the Optimism network by tracking Bob’s transaction. If a [Light Client](https://docs.train.tech/protocol/dApp#observing-the-destination-network) is available, it is used; otherwise, the dApp retrieves data from multiple RPC endpoints or uses the node provider specified by the user. Once detected, it captures the \`Hashlock\`.
+- Once the \`Hashlock\` is verified, Alice signs a message that adds the \`Hashlock\` and sets the \`receiver\` of her previously committed funds to Bob.
 
-At this point, there are two locks (on Starknet and Optimism) tied to the same \`Hashlock\`. The funds can be unlocked by providing a secret \`S\` that satisfies \`HASH(S) = Hashlock\`.
-8. Bob monitors the source Starknet network. Once he confirms that the commitment is locked for him and secured with his \`Hashlock\`, he **reveals the secret** \`S\` on both networks, claiming his funds and releasing Alice's funds.
+>At this point, there are two locks (on Starknet and Optimism) tied to the same \`Hashlock\`. The funds can be unlocked by providing a secret \`S\` that satisfies \`HASH(S) = Hashlock\`.
+
+- Bob monitors the source Starknet network. Once he confirms that the commitment is locked for him and secured with his \`Hashlock\`, he **reveals the secret** \`S\` on both networks, claiming his funds and releasing Alice's funds.
 
 ## Conclusion
 
