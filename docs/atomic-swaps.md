@@ -1,15 +1,21 @@
 # Atomic Swaps with Local Verification
 
-This document proposes an approach on solving asset interop beetween chains with Atomic Swaps. It doesn't require standardatized cross-chain messaging protocol, does not introduce new trust-assumptions and it's open and permisionless for any networks to join. [This protocol](https://ethereum-magicians.org/t/cross-chain-asset-bridging-with-atomic-swaps-and-local-verification/22444) leverages the improved version of HTLCs (called PreHTLC) along with recent develpomnents in Local Verificaiton methonds like running a Light Client in the browser. In essence this protocol introduces a mechanisms for Solving user's intents with Atomic Swaps.
+This proposal introduces an approach to solving asset interoperability between chains using Atomic Swaps. It does not require a standardized cross-chain messaging protocol, does not introduce new trust assumptions, and is open and permissionless for any network to join. [This protocol](https://ethereum-magicians.org/t/cross-chain-asset-bridging-with-atomic-swaps-and-local-verification/22444) leverages an improved version of HTLCs (called PreHTLC) alongside recent developments in local verification methods, such as running a light client in the browser (e.g. Helios).
 
 ## Fundamentals
-
-This aproach prioritized designing the protocol around 2 foundamental pillars:
 
 - **Trustless** - Users should be able to move assets between chains without ever losing control of their funds.
 - **Permissionless** - Networks should be able to join the protocol without approvals or gatekeepers.
 
-## Intents with PreHTLC and Local Verification
+## Intents with PreHTLC
+
+PreHTLC introduces three major improvements over classic HTLCs:
+
+- Secret management is delegated to the Solver
+- Users can select multiple Solvers to fulfill the transaction, addressing the liveness issue
+- Introduces a reward/slash mechanism to incentivize Solvers to act in a timely manner
+
+## Wolkthrough
 
 Let's walk through how the [PreHTLC protocol](https://docs.train.tech/protocol/atomic-swaps-prehtlc) works end-to-end when Alice wants to transfer 1 ETH from Starknet to Optimism.
 
@@ -34,6 +40,5 @@ At this point, there are two locks (on Starknet and Optimism) tied to the same `
 ## Conclusion
 
 - Process takes **<30 seconds**
-- users' and solvers' funds are **never taken** into custody
-- **any network** can be added, **anyone** can become a solver
-
+- Users' and solvers' funds are **never taken** into custody
+- **Any network** can be added, **anyone** can become a solver
