@@ -1,17 +1,15 @@
 # Atomic Swaps with Local Verification
 
-This document proposes an approach on solving asset interop beetween chains with Atomic Swaps. It doesn't require standardatized cross-chain messaging protocol, does not introduce new trust-assumptions and it's open and permisionless for any networks to join. [This protocol](https://ethereum-magicians.org/t/cross-chain-asset-bridging-with-atomic-swaps-and-local-verification/22444) leverates the improved version of HTLCs (called PreHTLC) along with recent develpomnents in Local Verificaiton methonds like running a Light Client in the browser.
+This document proposes an approach on solving asset interop beetween chains with Atomic Swaps. It doesn't require standardatized cross-chain messaging protocol, does not introduce new trust-assumptions and it's open and permisionless for any networks to join. [This protocol](https://ethereum-magicians.org/t/cross-chain-asset-bridging-with-atomic-swaps-and-local-verification/22444) leverages the improved version of HTLCs (called PreHTLC) along with recent develpomnents in Local Verificaiton methonds like running a Light Client in the browser. In essence this protocol introduces a mechanisms for Solving user's intents with Atomic Swaps.
 
 ## Fundamentals
 
 This aproach prioritized designing the protocol around 2 foundamental pillars:
 
-- Trustless
-Users should be able to move assets between chains without ever losing control of their funds.
-- Permissionless
-Networks should be able to join the protocol without approvals or gatekeepers.
+- **Trustless** - Users should be able to move assets between chains without ever losing control of their funds.
+- **Permissionless** - Networks should be able to join the protocol without approvals or gatekeepers.
 
-## Intens with PreHTLC and Local Verification
+## Intents with PreHTLC and Local Verification
 
 Let's walk through how the [PreHTLC protocol](https://docs.train.tech/protocol/atomic-swaps-prehtlc) works end-to-end when Alice wants to transfer 1 ETH from Starknet to Optimism.
 
