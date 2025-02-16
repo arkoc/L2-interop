@@ -1,44 +1,60 @@
 # Atomic Swaps with Local Verification
 
-This proposal introduces an approach to solving asset interoperability between chains using Atomic Swaps. It does not require a standardized cross-chain messaging protocol, does not introduce new trust assumptions, and is open and permissionless for any network to join. [This protocol](https://ethereum-magicians.org/t/cross-chain-asset-bridging-with-atomic-swaps-and-local-verification/22444) leverages an improved version of HTLCs (called PreHTLC) alongside recent developments in local verification methods, such as running a light client in the browser (e.g. Helios).
+This proposal introduces a mechanism for achieving asset interoperability between Ethereum L2s and beyond using Atomic Swaps. The approach does not require a cross-chain messaging protocol, does not introduce new trust assumptions, and remains open and permissionless for any network to participate. It leverages an enhanced version of HTLCs (PreHTLC) in conjunction with recent advancements in local verification techniques, such as running a light client in the browser (e.g., Helios), to achieve two primary objectives:
 
-## Fundamentals
-
-- **Trustless** - Users should be able to move assets between chains without ever losing control of their funds.
-- **Permissionless** - Networks should be able to join the protocol without approvals or gatekeepers.
+- **Trustless** – Users must be able to transfer assets between chains without relinquishing control of their funds.  
+- **Permissionless** – Networks should be able to integrate with the protocol without requiring approvals or external gatekeeping mechanisms.  
 
 ## Intents with PreHTLC
 
-PreHTLC introduces three major improvements over classic HTLCs:
+PreHTLC introduces three key improvements over [traditional HTLCs](https://en.bitcoin.it/wiki/Hash_Time_Locked_Contracts):  
 
-- Secret management is delegated to the Solver
-- Users can select multiple Solvers to fulfill the transaction, addressing the liveness issue
-- Introduces a reward/slash mechanism to incentivize Solvers to act in a timely manner
+- **Delegated secret management** – The Solver is responsible for managing secrets, reducing operational complexity for users.  
+- **Multiple Solver selection** – Users can designate multiple Solvers to fulfill the transaction, mitigating Solver liveness risks.  
+- **Incentive alignment** – A reward/slash mechanism ensures that Solvers are economically incentivized to execute transactions promptly.  
 
-## Wolkthrough
+This document does not exhaustively cover all edge cases and [implementation details](https://docs.train.tech) but instead provides a high-level overview of the core process.  
 
-Let's walk through how the [PreHTLC protocol](https://docs.train.tech/protocol/atomic-swaps-prehtlc) works end-to-end when Alice wants to transfer 1 ETH from Starknet to Optimism.
+## Protocol Walkthrough  
 
-- Alice opens the Bridge dApp, connects her wallet, and selects the route from Starknet to Optimism.  
-- The dApp queries the Solver Discovery contract and retrieves addresses of all Solvers that support that route.
-- Alice creates a **commit transaction with 1 ETH in Starknet** and passes the Solver addresses.
+The following outlines the end-to-end execution when Alice transfers 1 ETH from Starknet to Optimism.  
 
-At this stage, the locked funds can either be updated with a `Hashlock` after the auction winner is decided or refunded once the `Timelock` expires.
+1. **Transaction initiation:**  
+   - Alice accesses the Bridge dApp, connects her wallet, and selects the Starknet → Optimism transfer route.  
+   - The dApp queries the Solver Discovery contract to retrieve a list of available Solvers supporting the route.  
+   - Alice submits a **commit transaction** on Starknet, locking 1 ETH and specifying the set of Solvers.  
 
-- A Dutch Auction starts — Bob and John (Solvers) compete on price until one of them wins.  
-- Bob wins the auction generates secret `S`, calculates `Haslock = HASH(S)` and **locks 1 ETH on Optimism**.
+At this point, the locked funds are subject to one of two conditions:  
 
-Now, the funds are secured for Alice and can be released once Bob reveals the secret.
+- A `Hashlock` is added once the auction winner is determined.  
+- If no Solver successfully claims the transaction before the `Timelock` expires, Alice can reclaim her funds.  
 
-- The dApp begins **local verification** of the Optimism network by tracking Bob’s transaction. If a Light Client is available, it is used; otherwise, the dApp retrieves data from multiple RPC endpoints or uses the node provider specified by the user. Once detected, it retrieves the `Hashlock`.
-- Once the `Hashlock` is verified, Alice signs a message that adds the `Hashlock` and sets the `receiver` of her previously committed funds to Bob.
+2. **Solver selection via Dutch Auction:**  
+   - A Dutch auction is initiated, where Solvers (e.g., Bob and John) compete by progressively lowering their bid price.  
+   - Bob wins the auction, generates a secret `S`, computes `Hashlock = HASH(S)`, and **locks 1 ETH for Alice on Optimism**.  
 
-At this point, there are two locks (on Starknet and Optimism) tied to the same `Hashlock`. The funds can be unlocked by providing a secret `S` that satisfies `HASH(S) = Hashlock`.
+Once Bob has locked the corresponding amount on the destination chain, Alice's funds can be securely released upon disclosure of the secret.  
 
-- Bob monitors the source Starknet network. Once he confirms that the commitment is locked for him and secured with his `Hashlock`, he **reveals the secret** `S` on both networks, claiming his funds and releasing Alice's funds.
+3. **Local verification of the destination transaction:**  
+   - The dApp performs **local verification** by monitoring Bob’s transaction on Optimism.  
+   - If a light client is available, it is utilized for validation. Otherwise, the dApp queries multiple RPC endpoints or a user-specified RPC provider.  
+   - Upon confirming the transaction, the `Hashlock` is retrieved.  
 
-## Conclusion
+4. **Finalization and settlement:**  
+   - Once Alice verifies the `Hashlock`, she signs a transaction that assigns the `Hashlock` to her previously committed funds and sets the `receiver` to Bob.  
 
-- Process takes **<30 seconds**
-- Users' and solvers' funds are **never taken** into custody
-- **Any network** can be added, **anyone** can become a solver
+At this stage, both chains (Starknet and Optimism) hold funds locked under the same `Hashlock`. The only remaining step is secret revelation.  
+
+5. **Secret disclosure and fund release:**  
+   - Bob monitors Starknet for confirmation that the commitment is locked in his favor with the expected `Hashlock`.  
+   - Upon verification, Bob **reveals the secret** `S` on both chains, proving `HASH(S) = Hashlock`, thereby unlocking and claiming his funds while simultaneously releasing Alice's funds.  
+
+## Conclusion  
+
+By integrating an intent/solver-based framework with PreHTLCs and local verification, this protocol achieves:  
+
+- **Sub-30-second settlement times** for cross-chain transfers.  
+- **Non-custodial security** – neither users’ nor Solvers’ funds are ever controlled by an intermediary.  
+- **Open network integration** – any blockchain network can be onboarded without requiring explicit permission.  
+
+This approach ensures a scalable and trustless mechanism for cross-chain asset transfers without relying on third-party validators or external security mechanisms.
