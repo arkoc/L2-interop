@@ -30,7 +30,7 @@ At this stage, the locked funds can either be updated with a `Hashlock` after th
 
 Now, the funds are secured for Alice and can be released once Bob reveals the secret.
 
-- The dApp begins **local verification** of the Optimism network by tracking Bob’s transaction. If a Light Client is available, it is used; otherwise, the dApp retrieves data from multiple RPC endpoints or uses the node provider specified by the user. Once detected, it captures the `Hashlock`.
+- The dApp begins **local verification** of the Optimism network by tracking Bob’s transaction. If a Light Client is available, it is used; otherwise, the dApp retrieves data from multiple RPC endpoints or uses the node provider specified by the user. Once detected, it retrieves the `Hashlock`.
 - Once the `Hashlock` is verified, Alice signs a message that adds the `Hashlock` and sets the `receiver` of her previously committed funds to Bob.
 
 At this point, there are two locks (on Starknet and Optimism) tied to the same `Hashlock`. The funds can be unlocked by providing a secret `S` that satisfies `HASH(S) = Hashlock`.
